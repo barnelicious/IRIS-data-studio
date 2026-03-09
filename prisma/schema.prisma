@@ -1,0 +1,86 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── KGG Domain Models ───────────────────────────────────────────
+
+/// Expert consultants available on the marketplace
+model Expert {
+  id        String   @id @default(cuid())
+  name      String
+  hourlyRate Float   @map("hourly_rate")
+  /// Token tier: 1 = €0-400/hr, 2 = €401-800/hr
+  tokenTier  Int     @map("token_tier")
+  specialty  String?
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
+  engagements Engagement[]
+
+  @@map("experts")
+}
+
+/// Client companies purchasing tokens
+model Client {
+  id        String   @id @default(cuid())
+  name      String
+  industry  String?
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  projects Project[]
+
+  @@map("clients")
+}
+
+/// Projects that consume tokens
+model Project {
+  id           String        @id @default(cuid())
+  name         String
+  /// One of 15 categories based on 274 real projects
+  category     String
+  status       ProjectStatus @default(ACTIVE)
+  clientId     String        @map("client_id")
+  tokensSold   Int           @default(0) @map("tokens_sold")
+  tokensUsed   Int           @default(0) @map("tokens_used")
+  /// Minimum €700/token
+  tokenPrice   Float         @map("token_price")
+  createdAt    DateTime      @default(now()) @map("created_at")
+  updatedAt    DateTime      @updatedAt @map("updated_at")
+
+  client      Client       @relation(fields: [clientId], references: [id])
+  engagements Engagement[]
+
+  @@map("projects")
+}
+
+/// Individual expert engagements within a project
+model Engagement {
+  id           String   @id @default(cuid())
+  projectId    String   @map("project_id")
+  expertId     String   @map("expert_id")
+  tokensUsed   Int      @default(0) @map("tokens_used")
+  /// Computed: tokenPrice - (expertRate * hours / tokensUsed)
+  marginPct    Float?   @map("margin_pct")
+  startDate    DateTime @map("start_date")
+  endDate      DateTime? @map("end_date")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  project Project @relation(fields: [projectId], references: [id])
+  expert  Expert  @relation(fields: [expertId], references: [id])
+
+  @@map("engagements")
+}
+
+enum ProjectStatus {
+  ACTIVE
+  COMPLETED
+  AT_RISK
+  PAUSED
+}

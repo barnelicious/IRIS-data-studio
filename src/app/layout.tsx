@@ -3,7 +3,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "IRIS Data Studio",
-  description: "Interactive dashboard builder",
+  description: "Leadership intelligence dashboard for KGG",
 };
 
 export default function RootLayout({
