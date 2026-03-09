@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IRIS Data Studio: From Data-Blind to Data-Driven</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica', 'Arial', sans-serif; background: #000; color: #fff; overflow: hidden; }
+        .slides-container { width: 100vw; height: 100vh; position: relative; }
+        .slide { width: 100%; height: 100%; display: none; flex-direction: column; justify-content: center; align-items: center; padding: 80px 120px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); position: absolute; top: 0; left: 0; }
+        .slide.active { display: flex; }
+        .slide.title-slide { background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); }
+        .slide.content-slide { background: linear-gradient(135deg, #434343 0%, #000000 100%); }
+        .slide.highlight-slide { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+        h1 { font-size: 64px; font-weight: 700; margin-bottom: 24px; text-align: center; }
+        h2 { font-size: 48px; font-weight: 600; margin-bottom: 32px; text-align: center; }
+        h3 { font-size: 36px; font-weight: 600; margin-bottom: 20px; }
+        p { font-size: 24px; line-height: 1.6; margin-bottom: 16px; }
+        .subtitle { font-size: 28px; opacity: 0.9; text-align: center; margin-bottom: 60px; }
+        ul { list-style: none; font-size: 24px; line-height: 1.8; }
+        li { margin-bottom: 16px; padding-left: 30px; position: relative; }
+        li:before { content: "→"; position: absolute; left: 0; color: #4ade80; font-weight: bold; }
+        .metric { background: rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 24px; margin: 20px 0; backdrop-filter: blur(10px); }
+        .metric-value { font-size: 48px; font-weight: 700; color: #4ade80; }
+        .timeline { display: flex; justify-content: space-between; width: 100%; margin: 40px 0; }
+        .timeline-item { flex: 1; text-align: center; padding: 20px; }
+        .timeline-item h4 { font-size: 20px; margin-bottom: 10px; color: #4ade80; }
+        .navigation { position: fixed; bottom: 40px; right: 40px; display: flex; gap: 20px; z-index: 100; }
+        .nav-btn { background: rgba(255, 255, 255, 0.2); border: 2px solid rgba(255, 255, 255, 0.5); color: white; padding: 12px 24px; font-size: 18px; border-radius: 8px; cursor: pointer; backdrop-filter: blur(10px); transition: all 0.3s; }
+        .nav-btn:hover { background: rgba(255, 255, 255, 0.3); transform: scale(1.05); }
+        .slide-counter { position: fixed; bottom: 40px; left: 40px; font-size: 18px; color: rgba(255, 255, 255, 0.7); z-index: 100; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; width: 100%; }
+        .box { background: rgba(255, 255, 255, 0.1); padding: 30px; border-radius: 12px; backdrop-filter: blur(10px); }
+        table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 20px; }
+        th, td { padding: 16px; text-align: left; border-bottom: 1px solid rgba(255, 255, 255, 0.2); }
+        th { background: rgba(255, 255, 255, 0.1); font-weight: 600; }
+        .check { color: #4ade80; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="slides-container">
+        <!-- Slide 1: Title -->
+        <div class="slide active title-slide">
+            <h1>IRIS Data Studio</h1>
+            <p class="subtitle">From Data-Blind to Data-Driven in 10 Months</p>
+            <p style="margin-top: 60px; font-size: 20px; opacity: 0.8;">Presented by: Barney</p>
+        </div>
+
+        <!-- Slide 2: The Problem -->
+        <div class="slide content-slide">
+            <h2>We're Scaling Blind</h2>
+            <div class="metric">
+                <p>Growing fast: €1.8M → €2.6M, 2x volume</p>
+            </div>
+            <ul>
+                <li>"What's our margin this month?" → <strong>2+ days</strong></li>
+                <li>"Should I approve this pricing?" → <strong>Gut feel</strong></li>
+                <li>"Which projects are at risk?" → <strong>Discover too late</strong></li>
+            </ul>
+            <p style="margin-top: 40px; font-size: 32px; font-weight: 600; color: #f87171;">Result: Strategic paralysis, unprofitable deals, client surprises</p>
+        </div>
+
+        <!-- Slide 3: The Cost -->
+        <div class="slide highlight-slide">
+            <h2>The Cost of Data Blindness</h2>
+            <div class="grid-2">
+                <div class="box">
+                    <p class="metric-value">€900K</p>
+                    <p>Unused tokens (57% completion)</p>
+                </div>
+                <div class="box">
+                    <p class="metric-value">Unknown</p>
+                    <p>Actual margin (target 60%)</p>
+                </div>
+                <div class="box">
+                    <p class="metric-value">Days</p>
+                    <p>Wasted on manual compilation</p>
+                </div>
+                <div class="box">
+                    <p class="metric-value">Lost Deals</p>
+                    <p>Due to pricing uncertainty</p>
+                </div>
+            </div>
+            <p style="margin-top: 40px; text-align: center; font-size: 28px;">We don't know what we don't know.</p>
+        </div>
+
+        <!-- Slide 4: Current State -->
+        <div class="slide content-slide">
+            <h2>Data Lives Everywhere</h2>
+            <div style="display: flex; justify-content: space-around; width: 100%; margin: 40px 0;">
+                <div class="box" style="flex: 1; margin: 0 10px;">
+                    <h4 style="color: #4ade80; margin-bottom: 10px;">Hubspot</h4>
+                    <p style="font-size: 20px;">Sales Data</p>
+                </div>
+                <div class="box" style="flex: 1; margin: 0 10px;">
+                    <h4 style="color: #4ade80; margin-bottom: 10px;">Excel</h4>
+                    <p style="font-size: 20px;">Fulfillment</p>
+                </div>
+                <div class="box" style="flex: 1; margin: 0 10px;">
+                    <h4 style="color: #4ade80; margin-bottom: 10px;">IRIS</h4>
+                    <p style="font-size: 20px;">Transactions</p>
+                </div>
+                <div class="box" style="flex: 1; margin: 0 10px;">
+                    <h4 style="color: #4ade80; margin-bottom: 10px;">Manual</h4>
+                    <p style="font-size: 20px;">??? Data</p>
+                </div>
+            </div>
+            <ul>
+                <li>No single source of truth</li>
+                <li>Conflicting numbers between systems</li>
+                <li>Hours spent reconciling data</li>
+                <li>Strategic decisions delayed</li>
+            </ul>
+        </div>
+
+        <!-- Slide 5: The Opportunity -->
+        <div class="slide highlight-slide">
+            <h2>€450-500K Annual Value</h2>
+            <table>
+                <tr><th>Impact</th><th>Value</th><th>How</th></tr>
+                <tr><td><strong>Revenue Gain</strong></td><td class="check">€210K</td><td>Improve completion 57% → 67%</td></tr>
+                <tr><td><strong>Deals Recovered</strong></td><td class="check">€90-120K</td><td>Data-driven pricing wins more</td></tr>
+                <tr><td><strong>Margin Improvement</strong></td><td class="check">€150K+</td><td>Fix erosion 54% → 60%</td></tr>
+                <tr><td><strong>Operational Savings</strong></td><td class="check">€78K</td><td>Eliminate manual work</td></tr>
+            </table>
+            <p style="margin-top: 20px; text-align: center; font-size: 28px;"><strong>Plus:</strong> Scale 2x without 2x headcount</p>
+        </div>
+
+        <!-- Slide 6: Three Horizons -->
+        <div class="slide content-slide">
+            <h2>The Vision: Three Horizons</h2>
+            <div class="timeline">
+                <div class="timeline-item">
+                    <h4>Horizon 1</h4>
+                    <h3>See Clearly</h3>
+                    <p>Months 0-2</p>
+                    <p style="font-size: 18px; margin-top: 10px;">Leadership dashboards, real-time visibility</p>
+                </div>
+                <div class="timeline-item">
+                    <h4>Horizon 2</h4>
+                    <h3>Empower Everyone</h3>
+                    <p>Months 2-5</p>
+                    <p style="font-size: 18px; margin-top: 10px;">Operational tools for sales, fulfillment, finance</p>
+                </div>
+                <div class="timeline-item">
+                    <h4>Horizon 3</h4>
+                    <h3>Autonomous Intelligence</h3>
+                    <p>Months 5-10</p>
+                    <p style="font-size: 18px; margin-top: 10px;">IRIS makes decisions, prevents problems</p>
+                </div>
+            </div>
+            <p style="margin-top: 40px; text-align: center; font-size: 28px;">From passive dashboards to intelligent agent</p>
+        </div>
+
+        <!-- Slide 7: Phase 1 -->
+        <div class="slide content-slide">
+            <h2>Phase 1: Data Foundation (Months 0-2)</h2>
+            <p style="text-align: center; margin-bottom: 30px;"><strong>Who:</strong> Executives, Sales Leadership, Fulfillment Leadership (5-9 people)</p>
+            <div class="grid-2">
+                <div>
+                    <h3>What We Build:</h3>
+                    <ul>
+                        <li>Real-time margin dashboard</li>
+                        <li>Sales pricing intelligence</li>
+                        <li>Project health monitoring</li>
+                        <li>Team performance tracking</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3>Success Metrics:</h3>
+                    <ul>
+                        <li>100% exec daily usage in 2 weeks</li>
+                        <li>Answer margin in &lt;30 seconds</li>
+                        <li>3+ strategic decisions with data</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 8: Phase 2 -->
+        <div class="slide content-slide">
+            <h2>Phase 2: Democratized Intelligence (Months 2-5)</h2>
+            <p style="text-align: center; margin-bottom: 30px;"><strong>Who:</strong> Sales Reps, PMs, AMs, Finance, Coordinators (+24-52 people)</p>
+            <div class="grid-2">
+                <div>
+                    <h3>What We Build:</h3>
+                    <ul>
+                        <li>Personal dashboards</li>
+                        <li>Mobile tools for sales</li>
+                        <li>Advanced forecasting</li>
+                        <li>Email digests + Slack alerts</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3>Value Delivered:</h3>
+                    <ul>
+                        <li>Proposals: 30 min → 10 min</li>
+                        <li>PM monitoring: 90 min → 15 min</li>
+                        <li>Finance close: 3 days → 1 day</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 9: Phase 3 -->
+        <div class="slide highlight-slide">
+            <h2>Phase 3: IRIS Intelligent Agent (Months 5-10)</h2>
+            <div style="width: 100%;">
+                <div class="box" style="margin-bottom: 20px;">
+                    <h3>Instant Proposals</h3>
+                    <p>Client emails → IRIS drafts in 30 seconds</p>
+                    <p>Auto-categorizes into 15 project types, generates mock expert profiles</p>
+                </div>
+                <div class="box" style="margin-bottom: 20px;">
+                    <h3>Proactive Prevention</h3>
+                    <p>Predicts token depletion 2-3 weeks early, alerts PMs before clients complain</p>
+                </div>
+                <div class="box" style="margin-bottom: 20px;">
+                    <h3>Intelligent Matching</h3>
+                    <p>ML recommends experts (quality + cost optimized), learns from outcomes</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 10: The Transformation -->
+        <div class="slide content-slide">
+            <h2>Phase 3: The Transformation</h2>
+            <div class="grid-2">
+                <div class="box">
+                    <h3 style="color: #f87171;">Before IRIS Agent</h3>
+                    <p style="font-size: 20px;">Client inquiry → Human spends 2 hours → Proposal sent next day</p>
+                    <p style="font-size: 20px; margin-top: 20px;">Project at risk → Discover when client complains → Reactive fix</p>
+                </div>
+                <div class="box">
+                    <h3 style="color: #4ade80;">With IRIS Agent</h3>
+                    <p style="font-size: 20px;">Client inquiry → IRIS drafts in 30 seconds → Human reviews in 3 minutes</p>
+                    <p style="font-size: 20px; margin-top: 20px;">Project at risk → IRIS predicts 2 weeks early → PM proactively engages → No disruption</p>
+                </div>
+            </div>
+            <p style="margin-top: 40px; text-align: center; font-size: 28px; color: #4ade80;"><strong>30-50% of routine tasks automated by Month 10</strong></p>
+        </div>
+
+        <!-- Slide 11: Technical Foundation -->
+        <div class="slide content-slide">
+            <h2>Technical Foundation: Ready to Build</h2>
+            <div class="grid-2">
+                <div>
+                    <h3 class="check">Modern Tech Stack</h3>
+                    <ul>
+                        <li>Node.js 22 + NestJS</li>
+                        <li>React 19 + Next.js 16</li>
+                        <li>PostgreSQL + GraphQL</li>
+                        <li>AWS infrastructure</li>
+                        <li>HubSpot integration exists</li>
+                        <li>Payment integration exists</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="check">15 Project Categories</h3>
+                    <ul>
+                        <li>Based on 274 real projects</li>
+                        <li>Data-driven categorization</li>
+                        <li>Customer-facing language</li>
+                        <li>Ready for analytics</li>
+                        <li>Perfect for ML training</li>
+                    </ul>
+                </div>
+            </div>
+            <p style="margin-top: 40px; text-align: center; font-size: 28px; color: #4ade80;"><strong>No technical blockers. Ready to start.</strong></p>
+        </div>
+
+        <!-- Slide 12-20: Timeline, Resources, Metrics, Risks, Why Now, Decision, Next Steps, Choice, Questions -->
+        <div class="slide content-slide">
+            <h2>Timeline: 10 Months</h2>
+            <div style="width: 100%; margin: 40px 0;">
+                <div style="background: rgba(255,255,255,0.1); padding: 20px; border-radius: 12px; margin-bottom: 20px;">
+                    <h4 style="color: #4ade80; margin-bottom: 10px;">Month 0-2: Phase 1 (Leadership Dashboards)</h4>
+                    <div style="background: #4ade80; height: 20px; width: 20%; border-radius: 10px;"></div>
+                </div>
+                <div style="background: rgba(255,255,255,0.1); padding: 20px; border-radius: 12px; margin-bottom: 20px;">
+                    <h4 style="color: #4ade80; margin-bottom: 10px;">Month 2-5: Phase 2 (Operational Users)</h4>
+                    <div style="background: #4ade80; height: 20px; width: 30%; border-radius: 10px;"></div>
+                </div>
+                <div style="background: rgba(255,255,255,0.1); padding: 20px; border-radius: 12px;">
+                    <h4 style="color: #4ade80; margin-bottom: 10px;">Month 5-10: Phase 3 (IRIS Agent)</h4>
+                    <div style="background: #4ade80; height: 20px; width: 50%; border-radius: 10px;"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="slide content-slide">
+            <h2>Resources Required</h2>
+            <div class="grid-2">
+                <div class="box">
+                    <h3>Engineering</h3>
+                    <p><strong>1.5 FTE for 10 months</strong></p>
+                    <p style="font-size: 20px; margin-top: 10px;">0.75 data engineer + 0.75 product engineer</p>
+                </div>
+                <div class="box">
+                    <h3>Budget</h3>
+                    <ul>
+                        <li>Development: Internal (allocated)</li>
+                        <li>Infrastructure: €5-10K/year</li>
+                        <li>Optional ML contractor: €20-30K</li>
+                    </ul>
+                </div>
+            </div>
+            <p style="margin-top: 40px; text-align: center; font-size: 28px;"><strong>ROI:</strong> 3-6 month payback on €450-500K annual value</p>
+        </div>
+
+        <div class="slide title-slide">
+            <h1>Questions?</h1>
+            <p style="font-size: 28px; margin-top: 40px;">IRIS Data Studio: From Data-Blind to Data-Driven</p>
+            <p style="font-size: 20px; margin-top: 60px; opacity: 0.8;">Ready to transform KGG's operations</p>
+        </div>
+    </div>
+
+    <div class="slide-counter">
+        <span id="current-slide">1</span> / <span id="total-slides">14</span>
+    </div>
+
+    <div class="navigation">
+        <button class="nav-btn" id="prev-btn">← Previous</button>
+        <button class="nav-btn" id="next-btn">Next →</button>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+        document.getElementById('total-slides').textContent = totalSlides;
+
+        function showSlide(n) {
+            slides[currentSlide].classList.remove('active');
+            currentSlide = (n + totalSlides) % totalSlides;
+            slides[currentSlide].classList.add('active');
+            document.getElementById('current-slide').textContent = currentSlide + 1;
+        }
+
+        document.getElementById('prev-btn').addEventListener('click', () => showSlide(currentSlide - 1));
+        document.getElementById('next-btn').addEventListener('click', () => showSlide(currentSlide + 1));
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft') showSlide(currentSlide - 1);
+            if (e.key === 'ArrowRight') showSlide(currentSlide + 1);
+        });
+    </script>
+</body>
+</html>
