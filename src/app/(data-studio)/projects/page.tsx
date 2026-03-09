@@ -1,15 +1,15 @@
-import { seedProjects, PROJECT_CATEGORIES } from "@/lib/seed-data";
-import Card from "@/components/ui/Card";
-import StatusBadge from "@/components/ui/StatusBadge";
+import { getProjects, PROJECT_CATEGORIES } from "@/lib/db";
 import ProjectsFilter from "./ProjectsFilter";
 
-export default function ProjectsPage() {
+export default async function ProjectsPage() {
+  const allProjects = await getProjects({ limit: 1000 });
+
   const statusSummary = {
-    total: seedProjects.length,
-    active: seedProjects.filter((p) => p.status === "ACTIVE").length,
-    completed: seedProjects.filter((p) => p.status === "COMPLETED").length,
-    atRisk: seedProjects.filter((p) => p.status === "AT_RISK").length,
-    paused: seedProjects.filter((p) => p.status === "PAUSED").length,
+    total: allProjects.length,
+    active: allProjects.filter((p) => p.status === "ACTIVE").length,
+    completed: allProjects.filter((p) => p.status === "COMPLETED").length,
+    atRisk: allProjects.filter((p) => p.status === "AT_RISK").length,
+    paused: allProjects.filter((p) => p.status === "PAUSED").length,
   };
 
   return (
@@ -35,7 +35,7 @@ export default function ProjectsPage() {
 
       {/* Projects Table with client-side filtering */}
       <ProjectsFilter
-        projects={seedProjects}
+        projects={allProjects}
         categories={[...PROJECT_CATEGORIES]}
       />
     </div>

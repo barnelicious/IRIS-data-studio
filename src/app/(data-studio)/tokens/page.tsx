@@ -1,14 +1,17 @@
-import { seedProjects, computeKPIs, marginByCategory } from "@/lib/seed-data";
+import { getProjects, computeKPIs, marginByCategory } from "@/lib/db";
 import Card from "@/components/ui/Card";
 import StatusBadge from "@/components/ui/StatusBadge";
 import TokensKPIs from "./TokensKPIs";
 import TokensCharts from "./TokensCharts";
 
-export default function TokensPage() {
-  const kpis = computeKPIs();
-  const categories = marginByCategory();
+export default async function TokensPage() {
+  const [kpis, categories, allProjects] = await Promise.all([
+    computeKPIs(),
+    marginByCategory(),
+    getProjects({ limit: 1000 }),
+  ]);
 
-  const projectsByCompletion = [...seedProjects]
+  const projectsByCompletion = [...allProjects]
     .filter((p) => p.status !== "COMPLETED")
     .map((p) => ({
       ...p,

@@ -4,7 +4,7 @@ import Card from "@/components/ui/Card";
 import MarginTrendChart from "@/components/charts/MarginTrendChart";
 import RevenueChart from "@/components/charts/RevenueChart";
 import ProjectStatusChart from "@/components/charts/ProjectStatusChart";
-import type { MonthlyTrend } from "@/lib/seed-data";
+import type { MonthlyTrend } from "@/lib/db";
 
 interface Props {
   trends: MonthlyTrend[];

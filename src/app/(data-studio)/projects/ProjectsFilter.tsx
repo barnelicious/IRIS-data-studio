@@ -4,10 +4,10 @@ import { useState, useMemo } from "react";
 import Card from "@/components/ui/Card";
 import StatusBadge from "@/components/ui/StatusBadge";
 import { Search } from "lucide-react";
-import type { SeedProject } from "@/lib/seed-data";
+import type { ProjectWithClient } from "@/lib/db";
 
 interface Props {
-  projects: SeedProject[];
+  projects: ProjectWithClient[];
   categories: string[];
 }
 

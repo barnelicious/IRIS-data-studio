@@ -1,9 +1,10 @@
 import {
-  seedProjects,
-  monthlyTrends,
+  getProjects,
+  getProject,
+  getMonthlyTrends,
   computeKPIs,
   marginByCategory,
-} from "@/lib/seed-data";
+} from "@/lib/db";
 
 const resolvers = {
   Query: {
@@ -27,18 +28,11 @@ const resolvers = {
         status?: string;
         category?: string;
       }
-    ) => {
-      let filtered = [...seedProjects];
-      if (status) filtered = filtered.filter((p) => p.status === status);
-      if (category) filtered = filtered.filter((p) => p.category === category);
-      return filtered.slice(offset, offset + limit);
-    },
+    ) => getProjects({ limit, offset, status, category }),
 
-    project: (_: unknown, { id }: { id: string }) => {
-      return seedProjects.find((p) => p.id === id) ?? null;
-    },
+    project: (_: unknown, { id }: { id: string }) => getProject(id),
 
-    monthlyTrends: () => monthlyTrends,
+    monthlyTrends: () => getMonthlyTrends(),
 
     marginByCategory: () => marginByCategory(),
   },

@@ -28,7 +28,7 @@ model Expert {
 /// Client companies purchasing tokens
 model Client {
   id        String   @id @default(cuid())
-  name      String
+  name      String   @unique
   industry  String?
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -50,6 +50,14 @@ model Project {
   tokensUsed   Int           @default(0) @map("tokens_used")
   /// Minimum €700/token
   tokenPrice   Float         @map("token_price")
+  /// Primary expert rate for this project (€/hr)
+  expertRate   Float         @map("expert_rate")
+  /// Token tier: 1 = €0-400/hr, 2 = €401-800/hr
+  tokenTier    Int           @map("token_tier")
+  /// Realized margin percentage
+  margin       Float
+  startDate    DateTime      @map("start_date")
+  endDate      DateTime?     @map("end_date")
   createdAt    DateTime      @default(now()) @map("created_at")
   updatedAt    DateTime      @updatedAt @map("updated_at")
 
@@ -76,6 +84,21 @@ model Engagement {
   expert  Expert  @relation(fields: [expertId], references: [id])
 
   @@map("engagements")
+}
+
+/// Monthly revenue & margin trend snapshots
+model MonthlyTrend {
+  id         String @id @default(cuid())
+  month      String @unique
+  revenue    Float
+  cost       Float
+  margin     Float
+  tokensSold Int    @map("tokens_sold")
+  tokensUsed Int    @map("tokens_used")
+  projects   Int
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  @@map("monthly_trends")
 }
 
 enum ProjectStatus {

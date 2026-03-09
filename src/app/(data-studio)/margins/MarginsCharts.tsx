@@ -3,7 +3,7 @@
 import Card from "@/components/ui/Card";
 import MarginTrendChart from "@/components/charts/MarginTrendChart";
 import CategoryMarginChart from "@/components/charts/CategoryMarginChart";
-import type { MonthlyTrend } from "@/lib/seed-data";
+import type { MonthlyTrend } from "@/lib/db";
 
 interface CategoryData {
   category: string;

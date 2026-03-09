@@ -1,19 +1,24 @@
 import {
   marginByCategory,
-  monthlyTrends,
-  seedProjects,
+  getMonthlyTrends,
+  getProjects,
   computeKPIs,
-} from "@/lib/seed-data";
+} from "@/lib/db";
 import Card from "@/components/ui/Card";
 import MarginsKPIs from "./MarginsKPIs";
 import MarginsCharts from "./MarginsCharts";
 
-export default function MarginsPage() {
-  const kpis = computeKPIs();
-  const categories = marginByCategory();
+export default async function MarginsPage() {
+  const [kpis, categories, monthlyTrends, allProjects] = await Promise.all([
+    computeKPIs(),
+    marginByCategory(),
+    getMonthlyTrends(),
+    getProjects({ limit: 1000 }),
+  ]);
+
   const belowTarget = categories.filter((c) => c.avgMargin < 60);
-  const tier1Projects = seedProjects.filter((p) => p.tokenTier === 1);
-  const tier2Projects = seedProjects.filter((p) => p.tokenTier === 2);
+  const tier1Projects = allProjects.filter((p) => p.tokenTier === 1);
+  const tier2Projects = allProjects.filter((p) => p.tokenTier === 2);
   const tier1AvgMargin =
     Math.round(
       (tier1Projects.reduce((s, p) => s + p.margin, 0) / tier1Projects.length) *
@@ -55,7 +60,7 @@ export default function MarginsPage() {
               </tr>
             </thead>
             <tbody>
-              {[...seedProjects]
+              {[...allProjects]
                 .sort((a, b) => a.margin - b.margin)
                 .map((p) => (
                   <tr

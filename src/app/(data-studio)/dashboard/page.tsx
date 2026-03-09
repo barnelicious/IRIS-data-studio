@@ -1,21 +1,26 @@
-import { computeKPIs, monthlyTrends, seedProjects } from "@/lib/seed-data";
+import { computeKPIs, getMonthlyTrends, getProjects } from "@/lib/db";
 import Card from "@/components/ui/Card";
 import StatusBadge from "@/components/ui/StatusBadge";
 import DashboardKPIs from "./DashboardKPIs";
 import DashboardCharts from "./DashboardCharts";
 
-export default function DashboardPage() {
-  const kpis = computeKPIs();
-  const atRiskProjects = seedProjects.filter((p) => p.status === "AT_RISK");
-  const recentProjects = seedProjects
+export default async function DashboardPage() {
+  const [kpis, monthlyTrends, allProjects] = await Promise.all([
+    computeKPIs(),
+    getMonthlyTrends(),
+    getProjects({ limit: 1000 }),
+  ]);
+
+  const atRiskProjects = allProjects.filter((p) => p.status === "AT_RISK");
+  const recentProjects = allProjects
     .filter((p) => p.status === "ACTIVE")
     .slice(0, 5);
 
   const statusCounts = {
-    active: seedProjects.filter((p) => p.status === "ACTIVE").length,
-    completed: seedProjects.filter((p) => p.status === "COMPLETED").length,
-    atRisk: seedProjects.filter((p) => p.status === "AT_RISK").length,
-    paused: seedProjects.filter((p) => p.status === "PAUSED").length,
+    active: allProjects.filter((p) => p.status === "ACTIVE").length,
+    completed: allProjects.filter((p) => p.status === "COMPLETED").length,
+    atRisk: allProjects.filter((p) => p.status === "AT_RISK").length,
+    paused: allProjects.filter((p) => p.status === "PAUSED").length,
   };
 
   return (
