@@ -2,13 +2,16 @@ import { getProjects, computeKPIs, marginByCategory } from "@/lib/db";
 import Card from "@/components/ui/Card";
 import StatusBadge from "@/components/ui/StatusBadge";
 import TokensKPIs from "./TokensKPIs";
-import TokensCharts from "./TokensCharts";
+import dynamic from "next/dynamic";
+const TokensCharts = dynamic(() => import("./TokensCharts"), {
+  loading: () => <div className="h-64 bg-[#0f1117] rounded-xl animate-pulse" />,
+});
 
 export default async function TokensPage() {
   const [kpis, categories, allProjects] = await Promise.all([
     computeKPIs(),
     marginByCategory(),
-    getProjects({ limit: 1000 }),
+    getProjects({ limit: 100 }),
   ]);
 
   const projectsByCompletion = [...allProjects]

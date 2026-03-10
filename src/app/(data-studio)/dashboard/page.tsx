@@ -2,13 +2,16 @@ import { computeKPIs, getMonthlyTrends, getProjects } from "@/lib/db";
 import Card from "@/components/ui/Card";
 import StatusBadge from "@/components/ui/StatusBadge";
 import DashboardKPIs from "./DashboardKPIs";
-import DashboardCharts from "./DashboardCharts";
+import dynamic from "next/dynamic";
+const DashboardCharts = dynamic(() => import("./DashboardCharts"), {
+  loading: () => <div className="h-64 bg-[#0f1117] rounded-xl animate-pulse" />,
+});
 
 export default async function DashboardPage() {
   const [kpis, monthlyTrends, allProjects] = await Promise.all([
     computeKPIs(),
     getMonthlyTrends(),
-    getProjects({ limit: 1000 }),
+    getProjects({ limit: 100 }),
   ]);
 
   const atRiskProjects = allProjects.filter((p) => p.status === "AT_RISK");

@@ -2,7 +2,7 @@ import { getProjects, PROJECT_CATEGORIES } from "@/lib/db";
 import ProjectsFilter from "./ProjectsFilter";
 
 export default async function ProjectsPage() {
-  const allProjects = await getProjects({ limit: 1000 });
+  const allProjects = await getProjects({ limit: 100 });
 
   const statusSummary = {
     total: allProjects.length,

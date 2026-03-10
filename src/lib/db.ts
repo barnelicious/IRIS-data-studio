@@ -1,4 +1,4 @@
-import { prisma } from "./prisma";
+import { prisma, dbAvailable } from "./prisma";
 import {
   seedProjects,
   monthlyTrends as seedTrends,
@@ -93,14 +93,6 @@ function seedToProject(p: SeedProject): ProjectWithClient {
   };
 }
 
-async function dbAvailable(): Promise<boolean> {
-  try {
-    await prisma.$queryRaw`SELECT 1`;
-    return true;
-  } catch {
-    return false;
-  }
-}
 
 export async function getProjects(opts?: {
   limit?: number;
@@ -179,7 +171,7 @@ export async function computeKPIs() {
     return seedComputeKPIs();
   }
 
-  const projects = await getProjects({ limit: 1000 });
+  const projects = await getProjects({ limit: 500 });
 
   const active = projects.filter((p) => p.status === "ACTIVE");
   const atRisk = projects.filter((p) => p.status === "AT_RISK");
@@ -213,7 +205,7 @@ export async function marginByCategory() {
     return seedMarginByCategory();
   }
 
-  const projects = await getProjects({ limit: 1000 });
+  const projects = await getProjects({ limit: 500 });
 
   const categories = new Map<
     string,

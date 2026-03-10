@@ -6,14 +6,17 @@ import {
 } from "@/lib/db";
 import Card from "@/components/ui/Card";
 import MarginsKPIs from "./MarginsKPIs";
-import MarginsCharts from "./MarginsCharts";
+import dynamic from "next/dynamic";
+const MarginsCharts = dynamic(() => import("./MarginsCharts"), {
+  loading: () => <div className="h-64 bg-[#0f1117] rounded-xl animate-pulse" />,
+});
 
 export default async function MarginsPage() {
   const [kpis, categories, monthlyTrends, allProjects] = await Promise.all([
     computeKPIs(),
     marginByCategory(),
     getMonthlyTrends(),
-    getProjects({ limit: 1000 }),
+    getProjects({ limit: 100 }),
   ]);
 
   const belowTarget = categories.filter((c) => c.avgMargin < 60);
