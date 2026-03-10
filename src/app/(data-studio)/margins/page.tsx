@@ -44,42 +44,46 @@ export default async function MarginsPage() {
       <MarginsCharts categories={categories} trends={monthlyTrends} />
 
       <Card
-        title="Pricing Intelligence"
-        subtitle="Token pricing vs expert rates by tier — min floor €700/token"
+        title="Margin by Topic"
+        subtitle="Average margin, revenue, and token usage across practice areas"
       >
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-[#1e2130]">
-                <th className="text-left py-3 px-4 text-xs font-semibold text-gray-500 uppercase">Project</th>
-                <th className="text-left py-3 px-4 text-xs font-semibold text-gray-500 uppercase">Category</th>
-                <th className="text-right py-3 px-4 text-xs font-semibold text-gray-500 uppercase">Token Price</th>
-                <th className="text-right py-3 px-4 text-xs font-semibold text-gray-500 uppercase">Expert Rate</th>
-                <th className="text-center py-3 px-4 text-xs font-semibold text-gray-500 uppercase">Tier</th>
-                <th className="text-right py-3 px-4 text-xs font-semibold text-gray-500 uppercase">Margin</th>
+                <th className="text-left py-3 px-4 text-xs font-semibold text-gray-500 uppercase">Topic</th>
+                <th className="text-right py-3 px-4 text-xs font-semibold text-gray-500 uppercase">Projects</th>
+                <th className="text-right py-3 px-4 text-xs font-semibold text-gray-500 uppercase">Revenue</th>
+                <th className="text-right py-3 px-4 text-xs font-semibold text-gray-500 uppercase">Tokens Sold</th>
+                <th className="text-right py-3 px-4 text-xs font-semibold text-gray-500 uppercase">Completion</th>
+                <th className="text-right py-3 px-4 text-xs font-semibold text-gray-500 uppercase">Avg Margin</th>
               </tr>
             </thead>
             <tbody>
-              {[...allProjects]
-                .sort((a, b) => a.margin - b.margin)
-                .map((p) => (
+              {[...categories]
+                .sort((a, b) => a.avgMargin - b.avgMargin)
+                .map((c) => (
                   <tr
-                    key={p.id}
+                    key={c.category}
                     className="border-b border-[#1e2130] hover:bg-[#1e2130]/50 transition-colors"
                   >
-                    <td className="py-3 px-4 text-white font-medium">{p.name}</td>
-                    <td className="py-3 px-4 text-gray-400 text-xs">{p.category}</td>
-                    <td className="py-3 px-4 text-right text-white">€{p.tokenPrice}</td>
-                    <td className="py-3 px-4 text-right text-gray-300">€{p.expertRate}/hr</td>
-                    <td className="py-3 px-4 text-center">
+                    <td className="py-3 px-4 text-white font-medium">{c.category}</td>
+                    <td className="py-3 px-4 text-right text-gray-300">{c.projects}</td>
+                    <td className="py-3 px-4 text-right text-white">€{(c.revenue / 1000).toFixed(0)}k</td>
+                    <td className="py-3 px-4 text-right text-gray-300">{c.tokensSold}</td>
+                    <td className="py-3 px-4 text-right">
                       <span
-                        className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
-                          p.tokenTier === 1
-                            ? "bg-blue-500/10 text-blue-400"
-                            : "bg-purple-500/10 text-purple-400"
-                        }`}
+                        className="text-xs font-medium"
+                        style={{
+                          color:
+                            c.completionRate >= 80
+                              ? "#4ade80"
+                              : c.completionRate >= 50
+                                ? "#f59e0b"
+                                : "#f87171",
+                        }}
                       >
-                        T{p.tokenTier}
+                        {c.completionRate}%
                       </span>
                     </td>
                     <td className="py-3 px-4 text-right">
@@ -87,14 +91,14 @@ export default async function MarginsPage() {
                         className="font-semibold"
                         style={{
                           color:
-                            p.margin >= 60
+                            c.avgMargin >= 60
                               ? "#4ade80"
-                              : p.margin >= 50
+                              : c.avgMargin >= 50
                                 ? "#f59e0b"
                                 : "#f87171",
                         }}
                       >
-                        {p.margin}%
+                        {c.avgMargin}%
                       </span>
                     </td>
                   </tr>
