@@ -7,11 +7,13 @@ import {
   TrendingUp,
   Coins,
   FolderKanban,
+  Calculator,
   Database,
 } from "lucide-react";
 
 const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/pricing", label: "Token Pricing", icon: Calculator },
   { href: "/margins", label: "Margins", icon: TrendingUp },
   { href: "/tokens", label: "Tokens", icon: Coins },
   { href: "/projects", label: "Projects", icon: FolderKanban },

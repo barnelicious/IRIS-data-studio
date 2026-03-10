@@ -5,6 +5,7 @@ import { Bell } from "lucide-react";
 
 const pageTitles: Record<string, string> = {
   "/dashboard": "Dashboard",
+  "/pricing": "Token Pricing",
   "/margins": "Margin Analysis",
   "/tokens": "Token Management",
   "/projects": "Projects",
