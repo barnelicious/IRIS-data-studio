@@ -1,4 +1,11 @@
 import { prisma } from "./prisma";
+import {
+  seedProjects,
+  monthlyTrends as seedTrends,
+  computeKPIs as seedComputeKPIs,
+  marginByCategory as seedMarginByCategory,
+  type SeedProject,
+} from "./seed-data";
 
 export const PROJECT_CATEGORIES = [
   "Strategy & Transformation",
@@ -68,12 +75,48 @@ function formatProject(p: {
   };
 }
 
+function seedToProject(p: SeedProject): ProjectWithClient {
+  return {
+    id: p.id,
+    name: p.name,
+    client: p.client,
+    category: p.category,
+    status: p.status,
+    tokensSold: p.tokensSold,
+    tokensUsed: p.tokensUsed,
+    tokenPrice: p.tokenPrice,
+    expertRate: p.expertRate,
+    tokenTier: p.tokenTier,
+    margin: p.margin,
+    startDate: p.startDate,
+    endDate: p.endDate,
+  };
+}
+
+async function dbAvailable(): Promise<boolean> {
+  try {
+    await prisma.$queryRaw`SELECT 1`;
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 export async function getProjects(opts?: {
   limit?: number;
   offset?: number;
   status?: string;
   category?: string;
 }): Promise<ProjectWithClient[]> {
+  if (!(await dbAvailable())) {
+    let projects = seedProjects.map(seedToProject);
+    if (opts?.status) projects = projects.filter((p) => p.status === opts.status);
+    if (opts?.category) projects = projects.filter((p) => p.category === opts.category);
+    const offset = opts?.offset ?? 0;
+    const limit = opts?.limit ?? 50;
+    return projects.slice(offset, offset + limit);
+  }
+
   const where: Record<string, unknown> = {};
   if (opts?.status) where.status = opts.status;
   if (opts?.category) where.category = opts.category;
@@ -90,6 +133,11 @@ export async function getProjects(opts?: {
 }
 
 export async function getProject(id: string): Promise<ProjectWithClient | null> {
+  if (!(await dbAvailable())) {
+    const seed = seedProjects.find((p) => p.id === id);
+    return seed ? seedToProject(seed) : null;
+  }
+
   const row = await prisma.project.findUnique({
     where: { id },
     include: { client: true },
@@ -108,6 +156,10 @@ export interface MonthlyTrend {
 }
 
 export async function getMonthlyTrends(): Promise<MonthlyTrend[]> {
+  if (!(await dbAvailable())) {
+    return seedTrends;
+  }
+
   return prisma.monthlyTrend.findMany({
     orderBy: { month: "asc" },
     select: {
@@ -123,6 +175,10 @@ export async function getMonthlyTrends(): Promise<MonthlyTrend[]> {
 }
 
 export async function computeKPIs() {
+  if (!(await dbAvailable())) {
+    return seedComputeKPIs();
+  }
+
   const projects = await getProjects({ limit: 1000 });
 
   const active = projects.filter((p) => p.status === "ACTIVE");
@@ -153,6 +209,10 @@ export async function computeKPIs() {
 }
 
 export async function marginByCategory() {
+  if (!(await dbAvailable())) {
+    return seedMarginByCategory();
+  }
+
   const projects = await getProjects({ limit: 1000 });
 
   const categories = new Map<
