@@ -36,6 +36,11 @@
     "tailwindcss": "^4.2.1",
     "typescript": "^5.9.3"
   },
+  "overrides": {
+    "@as-integrations/next": {
+      "@apollo/server": "^5.4.0"
+    }
+  },
   "devDependencies": {
     "concurrently": "^9.1.2",
     "prisma": "^6.10.1",
