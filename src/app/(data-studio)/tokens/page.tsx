@@ -1,7 +1,13 @@
 import { getProjects, computeKPIs, marginByCategory } from "@/lib/db";
+import {
+  getCurrentQuarterConfig,
+  getCurrentQuarterProgress,
+} from "@/lib/pricing-engine";
 import Card from "@/components/ui/Card";
 import StatusBadge from "@/components/ui/StatusBadge";
 import TokensKPIs from "./TokensKPIs";
+import PricingTool from "./PricingTool";
+import QuarterOverview from "./QuarterOverview";
 import dynamic from "next/dynamic";
 const TokensCharts = dynamic(() => import("./TokensCharts"), {
   loading: () => <div className="h-64 bg-[#0f1117] rounded-xl animate-pulse" />,
@@ -13,6 +19,9 @@ export default async function TokensPage() {
     marginByCategory(),
     getProjects({ limit: 100 }),
   ]);
+
+  const quarterConfig = getCurrentQuarterConfig();
+  const quarterProgress = getCurrentQuarterProgress();
 
   const projectsByCompletion = [...allProjects]
     .filter((p) => p.status !== "COMPLETED")
@@ -39,6 +48,17 @@ export default async function TokensPage() {
       />
 
       <TokensCharts categories={categories} />
+
+      {/* Quarter overview & pricing calculator (moved from /pricing) */}
+      <QuarterOverview
+        config={quarterConfig}
+        progress={quarterProgress}
+        avgTokenPrice={kpis.avgTokenPrice}
+      />
+      <PricingTool
+        config={quarterConfig}
+        progress={quarterProgress}
+      />
 
       <Card
         title="Token Usage by Project"
