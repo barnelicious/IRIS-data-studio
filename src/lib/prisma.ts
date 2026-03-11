@@ -5,6 +5,7 @@ import dns from "dns";
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient;
   dbAvailable: boolean | null;
+  dbCheckPromise: Promise<boolean> | null;
 };
 
 export const prisma =
@@ -40,41 +41,41 @@ function tcpReachable(ip: string, port: number, timeoutMs = 500): Promise<boolea
  * Cached DB availability check — only pings the database once per server
  * lifetime. DNS resolve + TCP probe with short timeouts.
  */
-export async function dbAvailable(): Promise<boolean> {
-  if (globalForPrisma.dbAvailable !== null && globalForPrisma.dbAvailable !== undefined) {
-    return globalForPrisma.dbAvailable;
-  }
-
+async function checkDb(): Promise<boolean> {
   const url = process.env.DATABASE_URL ?? "";
   const match = url.match(/@([^:/]+):(\d+)/);
-  if (!match) {
-    globalForPrisma.dbAvailable = false;
-    return false;
-  }
+  if (!match) return false;
 
   const [, host, port] = match;
 
-  // Fast DNS check — bail if hostname can't resolve in 500ms
   const ip = await dnsResolve(host);
-  if (!ip) {
-    globalForPrisma.dbAvailable = false;
-    return false;
-  }
+  if (!ip) return false;
 
-  // Fast TCP check using resolved IP
-  if (!(await tcpReachable(ip, Number(port)))) {
-    globalForPrisma.dbAvailable = false;
-    return false;
-  }
+  if (!(await tcpReachable(ip, Number(port)))) return false;
 
   try {
     await Promise.race([
       prisma.$queryRaw`SELECT 1`,
       new Promise((_, reject) => setTimeout(() => reject(new Error("timeout")), 2000)),
     ]);
-    globalForPrisma.dbAvailable = true;
+    return true;
   } catch {
-    globalForPrisma.dbAvailable = false;
+    return false;
   }
-  return globalForPrisma.dbAvailable;
+}
+
+export async function dbAvailable(): Promise<boolean> {
+  if (globalForPrisma.dbAvailable !== null && globalForPrisma.dbAvailable !== undefined) {
+    return globalForPrisma.dbAvailable;
+  }
+
+  // Deduplicate concurrent calls — all callers share one check
+  if (!globalForPrisma.dbCheckPromise) {
+    globalForPrisma.dbCheckPromise = checkDb().then((result) => {
+      globalForPrisma.dbAvailable = result;
+      globalForPrisma.dbCheckPromise = null;
+      return result;
+    });
+  }
+  return globalForPrisma.dbCheckPromise;
 }
