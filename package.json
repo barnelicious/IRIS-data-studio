@@ -4,9 +4,7 @@
   "private": true,
   "description": "IRIS Data Studio — Leadership intelligence dashboard for KGG",
   "scripts": {
-    "dev": "concurrently \"npm run dev:web\" \"npm run dev:api\"",
-    "dev:web": "next dev --port 3000",
-    "dev:api": "ts-node-dev --respawn --transpile-only src/api/main.ts",
+    "dev": "next dev --port 3000",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
