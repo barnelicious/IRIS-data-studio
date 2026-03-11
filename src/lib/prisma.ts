@@ -68,7 +68,10 @@ export async function dbAvailable(): Promise<boolean> {
   }
 
   try {
-    await prisma.$queryRaw`SELECT 1`;
+    await Promise.race([
+      prisma.$queryRaw`SELECT 1`,
+      new Promise((_, reject) => setTimeout(() => reject(new Error("timeout")), 2000)),
+    ]);
     globalForPrisma.dbAvailable = true;
   } catch {
     globalForPrisma.dbAvailable = false;
