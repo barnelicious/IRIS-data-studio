@@ -65,6 +65,12 @@ async function checkDb(): Promise<boolean> {
 }
 
 export async function dbAvailable(): Promise<boolean> {
+  // Skip DB check entirely when using seed data
+  if (process.env.USE_SEED_DATA === "true") {
+    globalForPrisma.dbAvailable = false;
+    return false;
+  }
+
   if (globalForPrisma.dbAvailable !== null && globalForPrisma.dbAvailable !== undefined) {
     return globalForPrisma.dbAvailable;
   }
